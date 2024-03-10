@@ -3,6 +3,7 @@ module api
 go 1.21.1
 
 require (
+	github.com/google/uuid v1.6.0
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/lib/pq v1.10.9
 	github.com/meatballhat/negroni-logrus v1.1.1

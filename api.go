@@ -24,11 +24,12 @@ type AppCtx struct {
 type App struct {
 	listenAddr string
 	// API Engine
-	render *render.Render
-	router *httprouter.Router
-	logger *logrus.Logger
-	tokens Token
-	db     *sql.DB
+	render  *render.Render
+	router  *httprouter.Router
+	logger  *logrus.Logger
+	tokens  UserTokens
+	devices DeviceTokens
+	db      *sql.DB
 }
 
 func NewApp(ctx *AppCtx) (*App, error) {
@@ -50,7 +51,8 @@ func NewApp(ctx *AppCtx) (*App, error) {
 		render:     render.New(),
 		router:     httprouter.New(),
 		logger:     logger,
-		tokens:     make(Token),
+		tokens:     make(UserTokens),
+		devices:    make(DeviceTokens),
 		db:         ctx.db,
 	}, nil
 }
@@ -73,6 +75,30 @@ func (app *App) Run() {
 	app.router.GET("/ping", app.Ping)
 	app.router.GET("/auth", app.Auth)
 	app.router.GET("/me", app.Me)
+
+	//app.router.GET("/service/associated", app.Devices)
+	//app.router.POST("/service/confirm", app.Devices)
+
+	app.router.POST("/subscribe", app.SubscribeDevice)
+	app.router.GET("/service/associated", app.AssociateService)
+	app.router.POST("/service/confirm", app.ConfirmService)
+
+	//app.router.GET("/devices/:uuid/:subpath", app.Devices)
+	//app.router.PUT("/devices/:uuid/:subpath", app.Devices)
+
+	//app.router.POST("/devices/:uuid/events", app.Devices)
+
+	//app.router.PUT("/service/:uuid/:subpath", app.Devices)
+	//app.router.POST("/service/:uuid/:subpath", app.Devices)
+
+	//app.router.GET("/actions/todo", app.DeviceAction)         // endpoint where registred devices poll todo, return a todo with as associated id
+	//app.router.POST("/actions/:id", app.DeviceActionUpdate)	// endpoint where registred devices inform the status of the current todo (doing, done, error)
+
+	//app.router.GET("/locations", app.Me)
+	//app.router.GET("/locations/:uuid", app.Me)
+
+	//app.router.GET("/cabinets", app.Me)
+	//app.router.GET("/cabinets/:uuid", app.Me)
 
 	app.router.NotFound = http.FileServer(http.Dir("data"))
 	// Negroni handler

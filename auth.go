@@ -14,7 +14,7 @@ type User struct {
 	login  string
 	scopes []string
 }
-type Token map[string]User
+type UserTokens map[string]User
 
 var login_stmt *sql.Stmt
 
